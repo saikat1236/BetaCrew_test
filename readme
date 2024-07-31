@@ -1,0 +1,91 @@
+### **Project Overview**
+
+This project involves a client-server setup where the server simulates a stock exchange environment, and the client connects to this server to request and handle stock data.
+
+### **Files and Their Responsibilities**
+
+#### 1. **`main.js` (Server)**
+
+**Purpose:** 
+- Sets up a TCP server that simulates the stock exchange.
+
+**Functionality:**
+- Listens for incoming connections on port 3000.
+- Handles incoming requests based on the type of request (stream all packets or resend a packet).
+- When a connection is established, it streams stock data or resends specific packets based on the request received.
+- Simulates stock data and sends it to the client in packets.
+
+**Key Points:**
+- Handles `CallType 1` to stream all available packets and `CallType 2` to resend a specific packet.
+- Closes the connection after sending all packets for `CallType 1`.
+- Continues to keep the connection open for `CallType 2` until the client decides to close it.
+
+#### 2. **`client.js`**
+
+**Purpose:** 
+- Connects to the BetaCrew mock exchange server and handles communication.
+
+**Functionality:**
+- Establishes a connection to the server using TCP.
+- Sends a request to the server to stream all packets (`CallType 1`).
+- Receives data from the server and forwards it to `dataHandler.js` for processing.
+- Handles server disconnections and errors.
+
+**Key Points:**
+- On connection, sends a single byte indicating `CallType 1` for streaming data.
+- Logs received data and forwards it to `dataHandler` for processing.
+
+#### 3. **`config.js`**
+
+**Purpose:** 
+- Contains configuration settings for the server connection.
+
+**Functionality:**
+- Exports the host and port details required to connect to the server.
+
+**Key Points:**
+- `HOST`: Specifies the server IP address (localhost in this case).
+- `PORT`: Specifies the port number (3000).
+
+#### 4. **`dataHandler.js`**
+
+**Purpose:** 
+- Handles the processing of data received from the server.
+
+**Functionality:**
+- Parses the incoming data packets according to the format specified in the server’s protocol.
+- Extracts relevant fields from the packets (symbol, buy/sell indicator, quantity, price, and sequence).
+- Writes the extracted data to `stock_data.json` file for storage.
+
+**Key Points:**
+- Ensures data is formatted correctly and saved in JSON format.
+- Handles potential data integrity and validation issues.
+
+---
+
+### **Flow of Execution**
+
+1. **Server Initialization (`main.js`):**
+   - Starts a TCP server on port 3000.
+   - Listens for client connections and requests.
+   - Sends simulated stock data based on client requests.
+   - Closes the connection after sending all packets for `CallType 1`.
+
+2. **Client Initialization (`client.js`):**
+   - Connects to the server using settings from `config.js`.
+   - Sends a request to stream all packets.
+   - Receives data from the server and processes it using `dataHandler.js`.
+
+3. **Configuration (`config.js`):**
+   - Provides connection details used by the client to connect to the server.
+
+4. **Data Handling (`dataHandler.js`):**
+   - Parses the data received from the server.
+   - Writes the data to `stock_data.json` for persistent storage.
+
+### **Summary**
+
+- The server (`main.js`) simulates a stock exchange and streams data to clients based on their requests.
+- The client (`client.js`) connects to the server, requests data, and processes the received data using `dataHandler.js`.
+- Configuration details are managed in `config.js`.
+- Data is saved in `stock_data.json` for further use or analysis.
